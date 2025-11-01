@@ -12,4 +12,4 @@ eth-account==0.9.0
 python-dotenv==1.0.0
 
 # Optional but recommended
-gunicorn==21.2.0  # For production deployment
+gunicorn==21.2.0
