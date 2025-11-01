@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-logo">
+                <img src="{{ url_for('static', filename='images/logo.webp') }}" alt="University Logo">
+            </div>
+            
+            <h2>Administrator Login</h2>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages-container">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="{{ url_for('admin_login') }}">
+            
+            <form action="#" method="POST" class="login-form">
+                
+                <div class="input-group">
+                    <span class="input-icon">👤</span> 
+                    <input type="text" id="username" name="username" placeholder="Username/Email" required>
+                </div>
+                
+                <div class="input-group">
+                    <span class="input-icon">🔒</span>
+                    <input type="password" id="password" name="password" placeholder="Password" required>
+                    <span class="password-toggle">👁️</span>
+                </div>
+                
+                <button type="submit" class="btn-primary login-btn">Log In</button>
+            </form>
+            
+        </div>
+    </div>
+</body>
+</html>

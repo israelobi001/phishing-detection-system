@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .result-container {
+            max-width: 700px;
+            margin: 80px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        .success-icon { color: #2ecc71; }
+        .failure-icon { color: #e74c3c; }
+        .result-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .result-box h4 {
+            margin-top: 0;
+            color: #555;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .result-box p {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+        .result-box strong {
+            display: inline-block;
+            width: 150px;
+            font-weight: 600;
+        }
+        .hash-code {
+            word-break: break-all;
+            background: #f4f4f4;
+            padding: 5px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        .home-btn {
+            margin-top: 30px;
+            padding: 12px 30px;
+            font-size: 1rem;
+        }
+        /* NEW: Blockchain badge styles */
+        .blockchain-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-top: 15px;
+        }
+        .blockchain-verified {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .blockchain-pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .blockchain-link {
+            color: #3498db;
+            text-decoration: none;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+        .verification-status {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+            justify-content: center;
+        }
+        .status-item {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        .status-db {
+            border-color: #3498db;
+            background: #ebf5fb;
+        }
+        .status-blockchain {
+            border-color: #2ecc71;
+            background: #eafaf1;
+        }
+    </style>
+</head>
+<body class="login-body">
+    <div class="result-container">
+        <div class="login-logo">
+            <img src="{{ url_for('static', filename='images/logo.webp') }}" alt="University Logo">
+        </div>
+        
+        {% if student %}
+            <div class="icon success-icon">✅</div>
+            <h2 style="color: #2ecc71;">VERIFICATION SUCCESSFUL!</h2>
+            <p>The certificate is valid and verified.</p>
+            
+            <!-- Verification Status -->
+            <div class="verification-status">
+                <div class="status-item status-db">
+                    <h4 style="margin: 0 0 10px 0; color: #3498db;">📊 Database</h4>
+                    <p style="margin: 0; font-size: 1.1rem; font-weight: bold;">✅ Verified</p>
+                </div>
+                
+                {% if blockchain_result and blockchain_result.exists %}
+                <div class="status-item status-blockchain">
+                    <h4 style="margin: 0 0 10px 0; color: #2ecc71;">🔗 Blockchain</h4>
+                    <p style="margin: 0; font-size: 1.1rem; font-weight: bold;">✅ Verified</p>
+                    <p style="margin: 5px 0 0 0; font-size: 0.85rem; color: #666;">
+                        Stored: {{ blockchain_result.date_stored }}
+                    </p>
+                </div>
+                {% else %}
+                <div class="status-item" style="border-color: #95a5a6; background: #ecf0f1;">
+                    <h4 style="margin: 0 0 10px 0; color: #7f8c8d;">🔗 Blockchain</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #7f8c8d;">Not on blockchain</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="result-box" style="border: 1px solid #2ecc714d;">
+                <h4>Certificate Details</h4>
+                <p><strong>Full Name:</strong> {{ student.full_name }}</p>
+                <p><strong>Matric No:</strong> {{ student.matric_number }}</p>
+                <p><strong>Course:</strong> {{ student.course_of_study }}</p>
+                <p><strong>Awarded:</strong> {{ student.year_of_graduation }} ({{ student.honors }})</p>
+               <p><strong>Hash:</strong> <span class="hash-code">{{ student.certificate_hash }}</span></p>
+                
+                {% if student.on_blockchain and student.blockchain_tx_hash %}
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #eee;">
+                <h4>Blockchain Proof</h4>
+                <p><strong>Transaction:</strong> 
+                    <a href="https://sepolia.etherscan.io/tx/{{ student.blockchain_tx_hash }}" 
+                       target="_blank" 
+                       class="blockchain-link">
+                        {{ student.blockchain_tx_hash[:10] }}...{{ student.blockchain_tx_hash[-8:] }} 🔗
+                    </a>
+                </p>
+                <p><strong>Block:</strong> {{ student.blockchain_block_number }}</p>
+                <span class="blockchain-badge blockchain-verified">
+                    🔒 Verified on Ethereum Blockchain
+                </span>
+                {% endif %}
+            </div>
+            
+        {% else %}
+            <div class="icon failure-icon">❌</div>
+            <h2 style="color: #e74c3c;">VERIFICATION FAILED!</h2>
+            <p>No matching record found for the submitted certificate hash.</p>
+            
+            {% if blockchain_result and blockchain_result.exists %}
+            <div class="result-box" style="border: 1px solid #f39c12;">
+                <h4 style="color: #f39c12;">⚠️ Blockchain Record Found</h4>
+                <p>This hash exists on the blockchain but not in the local database.</p>
+                <p><strong>Matric No:</strong> {{ blockchain_result.matric_number }}</p>
+                <p><strong>Stored:</strong> {{ blockchain_result.date_stored }}</p>
+                <p style="margin-top: 15px; font-size: 0.9rem; color: #666;">
+                    This might indicate a database synchronization issue. Please contact the university administration.
+                </p>
+            </div>
+            {% else %}
+            <p style="margin-top: 20px; font-weight: bold;">
+                This certificate hash was not found in the database or blockchain.
+            </p>
+            <p style="color: #666;">
+                Please ensure the hash is correct, or contact the university administration.
+            </p>
+            {% endif %}
+        {% endif %}
+        
+        <a href="{{ url_for('index') }}" class="btn-primary home-btn">Return to Homepage</a>
+    </div>
+</body>
+</html>

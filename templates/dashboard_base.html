@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style> 
+        /* Basic dashboard layout styles */
+        .dashboard-layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 250px; background-color: #34495e; color: white; padding-top: 20px; flex-shrink: 0; }
+        .sidebar-links a { display: block; padding: 15px 20px; text-decoration: none; color: white; transition: background-color 0.2s; }
+        .sidebar-links a:hover, .sidebar-links a.active { background-color: #2c3e50; }
+        .main-content { flex-grow: 1; padding: 30px; background-color: #f4f7f6; }
+        .content-header { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
+        .logout-btn { background-color: #c0392b; color: white; padding: 8px 15px; border: none; border-radius: 5px; text-decoration: none;}
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        
+        <aside class="sidebar"><div class="a-logo">
+            <img src="{{ url_for('static', filename='images/admin logo.png') }}" alt="University Logo">
+        </div>
+            <h3 style="text-align: center; margin-bottom: 30px;">BOUESTI Admin</h3>
+            <div class="sidebar-links">
+                <a href="{{ url_for('dashboard_home') }}" class="{% if request.endpoint == 'dashboard_home' %}active{% endif %}">Dashboard Overview</a>
+                <a href="{{ url_for('upload_certificate_page') }}" class="{% if request.endpoint == 'upload_certificate_page' %}active{% endif %}">Upload Certificate</a>
+                <a href="{{ url_for('view_certificates') }}" class="{% if request.endpoint == 'view_certificates' %}active{% endif %}">View Certificates</a>
+                <a href="{{ url_for('logout') }}" class="logout-link">Logout</a>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <div class="content-header">
+                <h2>{% block content_header %}Dashboard{% endblock %}</h2>
+                <p>Welcome, Admin! (Logged in as: {{ current_user.username }})</p>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-container">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+</body>
+</html>

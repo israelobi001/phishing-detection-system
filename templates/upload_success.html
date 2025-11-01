@@ -1,0 +1,25 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Certificate Upload Success{% endblock %}
+
+{% block content_header %}Certificate Saved Successfully{% endblock %}
+
+{% block content %}
+    <div class="success-card" style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); text-align: center;">
+        <h3 style="color: #388e3c; margin-bottom: 20px;">✅ Unique Certificate Record Created</h3>
+
+        <p><strong>Student:</strong> {{ student.full_name }} ({{ student.matric_number }})</p>
+        <p style="margin-bottom: 30px;">This record is now secured in the database.</p>
+
+        <div class="hash-display" style="background: #f0f2f5; padding: 15px; border-radius: 6px; margin-bottom: 20px;">
+            <p style="font-weight: bold; margin-bottom: 5px;">Secure Verification Hash (SHA-256):</p>
+            <code style="word-break: break-all; font-size: 0.9rem; color: #c0392b;">{{ student.certificate_hash }}</code>
+        </div>
+
+        
+        <div style="margin-top: 40px;">
+            <a href="{{ url_for('upload_certificate_page') }}" class="btn-primary" style="margin-right: 15px;">Upload Another</a>
+            <a href="{{ url_for('view_certificates') }}" class="btn-primary" style="background-color: #3498db;">View All Records</a>
+        </div>
+    </div>
+{% endblock %}

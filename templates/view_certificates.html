@@ -1,0 +1,230 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}View All Certificates{% endblock %}
+{% block content_header %}Certificate Management{% endblock %}
+
+{% block content %}
+<style>
+/* --- Modern UI Enhancements --- */
+.view-container {
+    background: var(--container-bg, #fff);
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.input-field label {
+    display: block;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: #f9f9f9;
+    transition: all 0.2s;
+}
+.filter-select:focus {
+    outline: none;
+    border-color: #3498db;
+    background: #fff;
+}
+
+/* --- Buttons --- */
+.btn-action, .btn-primary {
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-primary {
+    background: #27ae60;
+    color: white;
+}
+.btn-primary:hover {
+    background: #219150;
+}
+.btn-action {
+    background: #3498db;
+    color: white;
+}
+.btn-action:hover {
+    background: #2980b9;
+}
+.btn-delete {
+    background: #e74c3c !important;
+}
+.btn-delete:hover {
+    background: #c0392b !important;
+}
+.btn-download {
+    background: #0041c2 !important;
+}
+.btn-download:hover {
+    background: #3838e7 !important;
+}
+
+.table-header-controls input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    min-width: 250px;
+    transition: all 0.3s;
+}
+.table-header-controls input:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+/* --- Table Styling --- */
+.table-responsive {
+    margin-top: 20px;
+    overflow-x: auto;
+    border-radius: 12px;
+}
+
+.certificate-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.certificate-table thead {
+    background: #3498db;
+    color: white;
+}
+.certificate-table th, .certificate-table td {
+    text-align: left;
+    padding: 12px 15px;
+}
+.certificate-table tbody tr:nth-child(even) {
+    background: #f9f9f9;
+}
+.certificate-table tbody tr:hover {
+    background: #ecf6fd;
+}
+
+/* --- Alerts --- */
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+.alert-info {
+    background-color: #eaf4ff;
+    border-left: 4px solid #3498db;
+    color: #2c3e50;
+}
+</style>
+
+<div class="view-container">
+    <div class="filter-controls">
+        <form action="{{ url_for('view_certificates') }}" method="GET" style="display: flex; gap: 20px; flex-wrap: wrap;">
+            <div class="input-field">
+                <label for="course">Filter by Course</label>
+                <select id="course" name="course" onchange="this.form.submit()" class="filter-select">
+                    <option value="">All Courses</option>
+                    {% for course in unique_courses %}
+                        <option value="{{ course }}" {% if course == selected_course %}selected{% endif %}>{{ course }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="input-field">
+                <label for="year">Filter by Year</label>
+                <select id="year" name="year" onchange="this.form.submit()" class="filter-select">
+                    <option value="">All Years</option>
+                    {% for year in unique_years %}
+                        <option value="{{ year }}" {% if year == selected_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <a href="{{ url_for('view_certificates') }}" class="btn-action" style="background-color: #7f8c8d;">Reset</a>
+        </form>
+
+        <div class="table-header-controls">
+            <input type="text" id="searchInput" placeholder="🔍 Search by name or matric number...">
+            <button class="btn-primary">Export CSV</button>
+        </div>
+    </div>
+
+    {% if students | length == 0 %}
+        <div class="alert alert-info">
+            No certificate records found. Please upload new certificate records.
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="certificate-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Full Name</th>
+                        <th>Matric Number</th>
+                        <th>Course</th>
+                        <th>Grad Year</th>
+                        <th>Classification</th>
+                        <th>Certificate Hash</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ student.full_name }}</td>
+                        <td>{{ student.matric_number }}</td>
+                        <td>{{ student.course_of_study }}</td>
+                        <td>{{ student.year_of_graduation }}</td>
+                        <td>{{ student.honors }}</td>
+                        <td><code title="{{ student.certificate_hash }}">{{ student.certificate_hash[:10] }}...</code></td>
+                        <td>
+                            <a href="{{ url_for('download_certificate', student_id=student.id) }}" class="btn-action btn-download">Download</a><br><br>
+                            <form action="{{ url_for('delete_certificate', student_id=student.id) }}" method="POST" onsubmit="return confirm('Delete record for {{ student.full_name }}? This cannot be undone.');" style="display:inline-block;">
+                                <button type="submit" class="btn-action btn-delete">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+document.getElementById('searchInput').addEventListener('keyup', function() {
+    let filter = this.value.toUpperCase();
+    let table = document.querySelector('.certificate-table');
+    let tr = table.getElementsByTagName('tr');
+    for (let i = 1; i < tr.length; i++) {
+        let rowText = tr[i].textContent || tr[i].innerText;
+        tr[i].style.display = rowText.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+    }
+});
+</script>
+{% endblock %}

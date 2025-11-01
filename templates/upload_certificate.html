@@ -1,0 +1,68 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Upload New Certificate{% endblock %}
+
+{% block content_header %}Upload Certificate{% endblock %}
+
+{% block content %}
+    <div class="upload-container">
+        <form action="{{ url_for('upload_certificate_page') }}" method="POST" class="upload-form">
+            
+            <h3 style="margin-bottom: 20px;">Student Details</h3>
+            
+            <div class="input-field">
+                <label for="full_name">Student Full Name:</label>
+                <input type="text" id="full_name" name="full_name" placeholder="E.g., John Chukwuemeka Doe" required>
+            </div>
+            
+            <div class="input-field">
+                <label for="matric_number">Matriculation Number:</label>
+                <input type="number" id="matric_number" name="matric_number" placeholder="E.g, 2814" required>
+            </div>
+            <div class="input-field">
+                <label for="course_of_study">Course of Study:</label>
+                <input type="text" id="course_of_study" name="course_of_study" placeholder="E.g., Computer Science" required>
+            </div>
+
+            <div class="input-group-row">
+                <div class="input-field">
+                    <label for="year_of_graduation">Year of Graduation:</label>
+                    <input type="number" id="year_of_graduation" name="year_of_graduation" placeholder="E.g., 2023" required min="1900" max="2100">
+                </div>
+
+                <div class="input-field">
+                    <label for="date_of_award">Date of Award (On Certificate):</label>
+                    <input type="date" id="date_of_award" name="date_of_award" required>
+                </div>
+            </div>
+
+            <div class="input-field">
+                <label for="honors">Honors / Classification:</label>
+                <select id="honors" name="honors" required>
+                    <option value="">-- Select Classification --</option>
+                    <option value="First Class">First Class Honours</option>
+                    <option value="Second Class Upper">Second Class Honours (Upper Division)</option>
+                    <option value="Second Class Lower">Second Class Honours (Lower Division)</option>
+                    <option value="Third Class">Third Class Honours</option>
+                    <option value="Pass">Pass</option>
+                    <option value="N/A">N/A (e.g., Non-Degree)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary upload-btn">
+                Generate Hash & Save Certificate Data
+            </button>
+        </form>
+
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Simple logic to set default graduation year to the current year
+            const yearInput = document.getElementById('year_of_graduation');
+            if (yearInput.value === '') {
+                yearInput.value = new Date().getFullYear();
+            }
+        });
+    </script>
+{% endblock %}

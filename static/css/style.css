@@ -1,0 +1,393 @@
+/* --- 1. Global Styles and Colors --- */
+:root {
+    --color-primary: #388e3c; /* Green for buttons/accents */
+    --color-text-dark: #333;
+    --color-background-light: #f0f2f5; /* Light background */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: var(--color-background-light);
+    color: var(--color-text-dark);
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* --- 2. Navigation Bar --- */
+.main-header {
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 10px 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--color-text-dark);
+    margin-left: 20px;
+    padding: 5px 0;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    color: var(--color-primary);
+    border-bottom: 2px solid var(--color-primary);
+}
+
+/* --- 3. Buttons --- */
+.btn-primary {
+    background-color: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background-color 0.3s;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    background-color: #2e7d32; /* Slightly darker green */
+}
+
+
+/* --- 4. Hero Section Layout --- */
+.hero-section {
+    background-color: white;
+    padding: 80px 40px;
+    margin-top: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.hero-content {
+    flex: 1;
+}
+
+.hero-image {
+    flex: 1;
+    text-align: right;
+}
+
+.hero-section h1 {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+}
+
+.hero-section p {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* --- 5. Benefits Section --- */
+.benefits-section {
+    text-align: center;
+    padding: 50px 0;
+}
+
+.benefits-section h2 {
+    margin-bottom: 40px;
+    font-size: 1.8rem;
+}
+
+.benefits-grid {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+}
+
+.benefit-item {
+    padding: 20px;
+    flex-basis: 30%;
+}
+
+.benefit-item .icon {
+    font-size: 2.5rem;
+    color: var(--color-primary);
+    display: block;
+    margin-bottom: 15px;
+}
+/* --- Admin Login Page Specific Styles --- */
+
+.login-body {
+    background-color: #e0e2e5; /* A subtle, light gray background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh; /* Ensures the page takes up the full screen height */
+}
+
+.login-container {
+    padding: 20px;
+}
+
+.login-card {
+    background-color: white;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 100%;
+    max-width: 400px;
+}
+
+.login-logo img {
+    height: 80px;
+    margin-bottom: 20px;
+}
+.a-logo img {
+    height: 150px;
+    
+    margin-left: 40px;
+    text-align: center;
+}
+.login-card h2 {
+    font-size: 1.8rem;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px;
+    transition: border-color 0.3s;
+}
+
+.input-group:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.input-icon {
+    font-size: 1.2rem;
+    color: #888;
+    margin-right: 10px;
+}
+
+.input-group input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-size: 1rem;
+    padding: 5px 0;
+}
+
+.password-toggle {
+    cursor: pointer;
+    color: #888;
+    font-size: 1rem;
+}
+
+.login-btn {
+    width: 100%;
+    padding: 15px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+/* --- Dashboard Upload Form Styles --- */
+
+.upload-container {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.upload-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-field label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.input-field input,
+.input-field select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+    transition: border-color 0.3s;
+}
+
+.input-field input:focus,
+.input-field select:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+/* For side-by-side fields */
+.input-group-row {
+    display: flex;
+    gap: 20px;
+}
+
+.input-group-row .input-field {
+    flex: 1; /* Makes fields take up equal width */
+}
+
+.upload-btn {
+    margin-top: 25px;
+    padding: 15px;
+    font-size: 1.1rem;
+}
+/* --- Flash Messages Styles --- */
+.flash-messages-container {
+    margin-bottom: 20px;
+}
+.alert {
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+.alert-danger {
+    background-color: #f8d7da; /* Light Red */
+    color: #721c24; /* Dark Red Text */
+    border: 1px solid #f5c6cb;
+}
+.alert-info {
+    background-color: #d1ecf1; /* Light Blue */
+    color: #0c5460; /* Dark Blue Text */
+    border: 1px solid #bee5eb;
+}
+.alert-success {
+    background-color: #d4edda; /* Light Green */
+    color: #155724; /* Dark Green Text */
+    border: 1px solid #c3e6cb;
+}
+/* --- View Certificates Table Styles --- */
+
+.view-container {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.table-header-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#searchInput {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 300px;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.certificate-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.certificate-table thead th {
+    background-color: #f4f7f6;
+    color: #333;
+    font-weight: 600;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 2px solid #ddd;
+}
+
+.certificate-table tbody td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.certificate-table tbody tr:hover {
+    background-color: #fafafa;
+}
+
+.certificate-table tbody td code {
+    background-color: #f0f2f5;
+    padding: 2px 5px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    color: #c0392b;
+}
+
+.btn-action {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: background-color 0.2s;
+}
+
+.btn-delete {
+    background-color: #e74c3c;
+    color: white;
+}
+.btn-delete:hover {
+    background-color: #c0392b;
+}
+/* --- Download Button Style --- */
+.btn-download {
+    background-color: #3498db; /* Blue */
+    color: white;
+    text-decoration: none; /* Make it look like a button, not a link */
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+.btn-download:hover {
+    background-color: #2980b9;
+}

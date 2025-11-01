@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOUESTI - Secure Certificate Verification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.webp') }}" alt="BOUESTI Logo" style="height: 40px;">
+            <span>BOUESTI</span>
+        </div>
+        <nav class="nav-links">
+            <a href="{{ url_for('index') }}" class="active">Home</a>
+            <a href="{{ url_for('verify_certificate') }}">Verify Certificate</a>
+            <a href="{{ url_for('admin_login') }}">Admin Login</a>
+        </nav>
+    </header>
+
+    <main class="container hero-section">
+        <div class="hero-content">
+            <h1>Secure, Instant, and Tamper-Proof Certificate Verification</h1>
+            <p>Leveraging Blockchain and QR Code Technology for trusted credentials</p>
+            <a href="{{ url_for('verify_certificate') }}" class="btn-primary">Verify Certificate Now</a>
+        </div>
+        <div class="hero-image">
+             <img src="{{ url_for('static', filename='images/Blockchain Illustration.png') }}" alt="Blockchain Illustration" style="max-width: 100%;">
+        </div>
+    </main>
+
+    <section class="container benefits-section">
+        <h2>Why Blockchain?</h2>
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <span class="icon locked">🔒</span>
+                <h3>Immutability</h3>
+            </div>
+            <div class="benefit-item">
+                <span class="icon search">🔎</span>
+                <h3>Transparency</h3>
+            </div>
+            <div class="benefit-item">
+                <span class="icon decentralized">⚛️</span>
+                <h3>Decentralization</h3>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

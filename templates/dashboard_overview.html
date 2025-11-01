@@ -1,0 +1,78 @@
+{% extends "dashboard_base.html" %}
+
+{% block title %}Dashboard Overview{% endblock %}
+
+{% block content_header %}Dashboard Overview{% endblock %}
+
+{% block content %}
+    <div class="overview-boxes" style="display: flex; gap: 20px; flex-wrap: wrap;">
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex: 1; min-width: 250px;">
+            <h3 style="color: #3498db; margin-bottom: 10px;">📊 Total Certificates</h3>
+            <p style="font-size: 2.5rem; color: #34495e; font-weight: bold; margin: 10px 0;">{{ total_certificates }}</p>
+            <p style="font-size: 0.9rem; color: #7f8c8d;">Stored in database</p>
+        </div>
+        
+        {% if blockchain_enabled %}
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex: 1; min-width: 250px;">
+            <h3 style="color: #2ecc71; margin-bottom: 10px;">🔗 On Blockchain</h3>
+            <p style="font-size: 2.5rem; color: #2ecc71; font-weight: bold; margin: 10px 0;">{{ blockchain_certificates }}</p>
+            <p style="font-size: 0.9rem; color: #7f8c8d;">Verified on Ethereum</p>
+        </div>
+        
+        <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex: 1; min-width: 250px;">
+            <h3 style="color: #9b59b6; margin-bottom: 10px;">⛓️ Blockchain Total</h3>
+            <p style="font-size: 2.5rem; color: #9b59b6; font-weight: bold; margin: 10px 0;">{{ blockchain_total }}</p>
+            <p style="font-size: 0.9rem; color: #7f8c8d;">Records on smart contract</p>
+        </div>
+        {% else %}
+        <div style="background: #fff3cd; padding: 20px; border-radius: 8px; border: 1px solid #ffeeba; flex: 1; min-width: 250px;">
+            <h3 style="color: #856404; margin-bottom: 10px;">⚠️ Blockchain Status</h3>
+            <p style="font-size: 1.1rem; color: #856404; margin: 10px 0;">Not Configured</p>
+            <p style="font-size: 0.85rem; color: #856404;">
+                Set environment variables to enable blockchain features
+            </p>
+        </div>
+        {% endif %}
+    </div>
+
+    <h3 style="margin-top: 40px; color: #34495e;">System Status</h3>
+    <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="border-bottom: 1px solid #ecf0f1;">
+                <td style="padding: 10px 0; font-weight: 600;">Database</td>
+                <td style="padding: 10px 0;"><span style="color: #2ecc71;">✅ Online</span> (SQLite)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ecf0f1;">
+                <td style="padding: 10px 0; font-weight: 600;">Security</td>
+                <td style="padding: 10px 0;"><span style="color: #2ecc71;">✅ Active</span> (Flask-Login & SHA-256)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #ecf0f1;">
+                <td style="padding: 10px 0; font-weight: 600;">Blockchain</td>
+                <td style="padding: 10px 0;">
+                    {% if blockchain_enabled %}
+                    <span style="color: #2ecc71;">✅ Connected</span> (Ethereum Sepolia Testnet)
+                    {% else %}
+                    <span style="color: #e67e22;">⚠️ Not Configured</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 10px 0; font-weight: 600;">PDF Generation</td>
+                <td style="padding: 10px 0;"><span style="color: #2ecc71;">✅ Operational</span> (ReportLab)</td>
+            </tr>
+        </table>
+    </div>
+
+    {% if blockchain_enabled %}
+    <h3 style="margin-top: 40px; color: #34495e;">Quick Actions</h3>
+    <div style="display: flex; gap: 15px;">
+        <a href="{{ url_for('upload_certificate_page') }}" class="btn-primary" style="text-decoration: none;">
+            ➕ Upload New Certificate
+        </a>
+        <a href="{{ url_for('view_certificates') }}" class="btn-primary" style="background-color: #3498db; text-decoration: none;">
+            📋 View All Certificates
+        </a>
+    </div>
+    {% endif %}
+
+{% endblock %}

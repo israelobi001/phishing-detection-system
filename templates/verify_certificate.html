@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Certificate | BOUESTI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Use html5-qrcode library instead of Instascan (more reliable) -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    
+    <style>
+        .verify-container {
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .camera-feed {
+            margin: 20px auto;
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            overflow: hidden;
+            max-width: 100%;
+            position: relative;
+        }
+        
+        #reader {
+            width: 100%;
+            border-radius: 8px;
+        }
+        
+        .hash-input-group {
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        .hash-input-group input {
+            flex-grow: 1; 
+            padding: 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        .hash-input-group button {
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 4px; 
+            background-color: var(--color-primary); 
+            color: white; 
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .hash-input-group button:hover {
+            background-color: #2e7d32;
+        }
+        
+        #camera-status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .status-loading {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #90caf9;
+        }
+        
+        .status-success {
+            background: #e8f5e9;
+            color: #388e3c;
+            border: 1px solid #81c784;
+        }
+        
+        .status-error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef5350;
+        }
+        
+        .camera-controls {
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        .camera-controls button {
+            padding: 10px 20px;
+            margin: 0 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .btn-start {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .btn-stop {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .btn-start:hover {
+            background-color: #45a049;
+        }
+        
+        .btn-stop:hover {
+            background-color: #da190b;
+        }
+    </style>
+</head>
+<body class="login-body">
+    <div class="verify-container">
+        
+        <div class="login-logo">
+            <img src="{{ url_for('static', filename='images/logo.webp') }}" alt="University Logo">
+        </div>
+        <h2 style="color: var(--color-primary); margin-bottom: 10px;">Certificate Verification</h2>
+        <p style="color: #777; margin-bottom: 30px;">Scan the QR code or enter the unique hash below.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages-container" style="margin-top: 15px;">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}" style="color: {% if category == 'success' %}#388e3c{% else %}#c0392b{% endif %}; border: 1px solid; padding: 10px; border-radius: 4px; margin-bottom: 10px;">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h3 style="margin-top: 25px; color: #34495e;">1. Scan Certificate QR Code</h3>
+
+        <div id="camera-status" class="status-loading">
+            📷 Camera not started. Click "Start Camera" below.
+        </div>
+
+        <div class="camera-feed">
+            <div id="reader"></div>
+        </div>
+        
+        <div class="camera-controls">
+            <button id="start-camera" class="btn-start">📷 Start Camera</button>
+            <button id="stop-camera" class="btn-stop" style="display: none;">⏹️ Stop Camera</button>
+        </div>
+        
+        <p style="color: #7f8c8d; font-size: 0.9em; margin: 15px 0; text-align: center;">
+            Grant camera access to scan a physical certificate's QR code automatically.
+        </p>
+
+        <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+
+        <h3 style="color: #34495e;">2. Or Enter Hash Manually</h3>
+
+        <form method="POST" action="{{ url_for('verify_certificate') }}" class="verify-form">
+            <div class="hash-input-group">
+                 <input type="text" id="hash_manual" name="certificate_hash" placeholder="Enter Certificate Hash (SHA-256)" 
+                       maxlength="64" pattern="[a-fA-F0-9]{64}">
+                <button type="submit" class="btn-primary">
+                    Verify
+                </button>
+            </div>
+        </form>
+        
+        <a href="{{ url_for('index') }}" style="display: block; margin-top: 25px; color: #3498db; text-decoration: none;">&larr; Back to Home</a>
+    </div>
+
+    <script type="text/javascript">
+        let html5QrCode = null;
+        let isScanning = false;
+
+        const statusDiv = document.getElementById('camera-status');
+        const startBtn = document.getElementById('start-camera');
+        const stopBtn = document.getElementById('stop-camera');
+
+        // Function to update status message
+        function updateStatus(message, type) {
+            statusDiv.className = 'status-' + type;
+            statusDiv.innerHTML = message;
+        }
+
+        // Function to handle successful QR scan
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`QR Code detected: ${decodedText}`);
+            
+            try {
+                // Try to parse as URL
+                const url = new URL(decodedText);
+                const hashValue = url.searchParams.get('hash');
+                
+                if (hashValue && hashValue.length === 64) {
+                    // Stop scanning
+                    stopScanner();
+                    
+                    // Show success message
+                    updateStatus('✅ QR Code Scanned! Redirecting...', 'success');
+                    
+                    // Redirect to verification page
+                    setTimeout(() => {
+                        window.location.href = "{{ url_for('verify_certificate') }}?hash=" + hashValue;
+                    }, 1000);
+                } else {
+                    updateStatus('⚠️ Invalid QR code format', 'error');
+                }
+            } catch (e) {
+                updateStatus('⚠️ Not a valid certificate QR code', 'error');
+            }
+        }
+
+        // Function to handle scan errors (ignore - too noisy)
+        function onScanFailure(error) {
+            // Don't log every frame error - too spammy
+        }
+
+        // Function to start the scanner
+        async function startScanner() {
+            if (isScanning) return;
+
+            try {
+                updateStatus('🔄 Starting camera...', 'loading');
+                
+                // Initialize scanner if not already done
+                if (!html5QrCode) {
+                    html5QrCode = new Html5Qrcode("reader");
+                }
+
+                // Get available cameras
+                const cameras = await Html5Qrcode.getCameras();
+                
+                if (cameras && cameras.length > 0) {
+                    // Prefer back camera if available (better for scanning)
+                    let cameraId = cameras[0].id;
+                    
+                    // Look for back camera
+                    for (let camera of cameras) {
+                        if (camera.label.toLowerCase().includes('back') || 
+                            camera.label.toLowerCase().includes('rear')) {
+                            cameraId = camera.id;
+                            break;
+                        }
+                    }
+
+                    // Start scanning
+                    await html5QrCode.start(
+                        cameraId,
+                        {
+                            fps: 10,    // Frames per second
+                            qrbox: { width: 250, height: 250 }  // Scanning box size
+                        },
+                        onScanSuccess,
+                        onScanFailure
+                    );
+
+                    isScanning = true;
+                    updateStatus('📷 Camera active - Point at QR code', 'success');
+                    
+                    // Update buttons
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'inline-block';
+                    
+                } else {
+                    updateStatus('❌ No camera found on this device', 'error');
+                }
+
+            } catch (err) {
+                console.error('Camera error:', err);
+                
+                if (err.name === 'NotAllowedError') {
+                    updateStatus('❌ Camera permission denied. Please allow camera access in your browser settings.', 'error');
+                } else if (err.name === 'NotFoundError') {
+                    updateStatus('❌ No camera detected on this device', 'error');
+                } else if (err.name === 'NotReadableError') {
+                    updateStatus('❌ Camera is being used by another application', 'error');
+                } else {
+                    updateStatus('❌ Error starting camera: ' + err.message, 'error');
+                }
+            }
+        }
+
+        // Function to stop the scanner
+        async function stopScanner() {
+            if (!isScanning || !html5QrCode) return;
+
+            try {
+                await html5QrCode.stop();
+                isScanning = false;
+                updateStatus('📷 Camera stopped', 'loading');
+                
+                // Update buttons
+                startBtn.style.display = 'inline-block';
+                stopBtn.style.display = 'none';
+                
+            } catch (err) {
+                console.error('Error stopping camera:', err);
+            }
+        }
+
+        // Event listeners
+        startBtn.addEventListener('click', startScanner);
+        stopBtn.addEventListener('click', stopScanner);
+
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            if (isScanning && html5QrCode) {
+                html5QrCode.stop();
+            }
+        });
+    </script>
+</body>
+</html>
